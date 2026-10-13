@@ -1,0 +1,10 @@
+@import './tailwind.css';
+@import './theme.css';
+
+@layer base {
+  /* Override default text selection prevention for inputs */
+  input, textarea, select, [contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}

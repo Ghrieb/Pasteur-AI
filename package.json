@@ -1,0 +1,18 @@
+{
+  "name": "pasteur-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PasteurAI — Institut Pasteur diagnostic platform",
+  "scripts": {
+    "dev:frontend": "cd frontend && npx vite --host",
+    "dev:backend": "py -m uvicorn backend.server:app --reload --host 0.0.0.0 --port 8000",
+    "dev": "concurrently -n fe,be -c cyan,green \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "build": "cd frontend && npx vite build",
+    "preview": "cd frontend && npx vite preview",
+    "start": "npm run dev",
+    "lint": "cd frontend && npx vite build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

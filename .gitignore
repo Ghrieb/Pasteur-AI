@@ -1,0 +1,38 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+node_modules/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+backend/.env
+
+# Logs
+*.log
+
+# Data
+downloads/*
+!downloads/.gitkeep
+output/*
+!output/.gitkeep
+data/
+QrCodes/
+
+# Electron
+electron/dist/
+electron/out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

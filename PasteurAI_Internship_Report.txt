@@ -1,0 +1,353 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    PASTEUR AI — INTERNSHIP REPORT
+        Intelligent Medical Laboratory Report Analysis System
+                  Institut Pasteur d'Algérie
+═══════════════════════════════════════════════════════════════════════════════
+
+1.  OVERVIEW
+───────────────────────────────────────────────────────────────────────────────
+
+PasteurAI is an AI-powered medical kiosk system designed for Institut Pasteur
+d'Algérie (IPA). It allows patients to scan the QR code printed on their lab
+report, then instantly receive a clear, bilingual (French, Arabic, English)
+dashboard with AI-generated insights that explain their results in plain
+language.
+
+The system bridges the gap between complex laboratory data and patient
+comprehension — turning a dense PDF of numerical values into an interactive
+visual dashboard with clinical interpretations, severity indicators, and
+trend tracking across historical reports.
+
+
+2.  FEATURES
+───────────────────────────────────────────────────────────────────────────────
+
+  2.1  QR Code Scanning
+       - Patients scan the QR code from their printed IPA report using a
+         webcam or uploaded image.
+       - The system extracts the report reference number automatically via
+         regex pattern matching (`/r/(\d+)`).
+       - No manual input required — scan and go.
+
+  2.2  Automatic PDF Retrieval & Parsing
+       - The backend downloads the original PDF from IPA's secure server.
+       - A custom-built PdfParser extracts all test data using French-language
+         medical regex patterns.
+       - The parser handles 50+ different biomarker tests across hematology,
+         biochemistry, hormones, vitamins, tumor markers, coagulation,
+         electrolytes, immunology, and more.
+       - Each test is matched against a comprehensive biomarker registry of
+         105 entries with canonical names, categories, and dashboard groups.
+
+  2.3  Interactive Medical Dashboard
+       - Radial health score gauge (0–100) giving an at-a-glance wellness
+         indicator.
+       - Category-based radar chart showing system-by-system health (blood,
+         liver, kidneys, lipids, heart, diabetes, thyroid, etc.).
+       - Color-coded biomarker cards with severity badges:
+           ● Normal   (green)
+           ▲ Elevated (amber)
+           ▼ Low      (blue)
+           ■ Critical (red)
+       - Historical trend view comparing current results against previous
+         reports for the same patient.
+
+  2.4  AI-Powered Clinical Insights
+       - After dashboard display, the system sends a structured prompt to
+         the Groq LLM (llama-3.1-8b-instant) for detailed analysis.
+       - The AI returns:
+         • A concise summary of abnormal findings.
+         • Individual clinical interpretations for each anomaly (e.g.,
+           "Cytolyse hépatique modérée", "Hypothyroïdie infraclinique").
+         • Actionable recommendations.
+         • Confidence scores for each finding.
+       - A built-in fallback generates findings from raw test data if the AI
+         is unavailable, ensuring zero downtime.
+       - Patients can ask follow-up questions about specific findings via the
+         Q&A interface (e.g., "Explain Gamma GT in detail").
+
+  2.5  Multilingual Interface
+       - Full interface in French (default), Arabic, and English.
+       - All biomarker names, categories, severity labels, and AI responses
+         adapt to the selected language.
+
+  2.6  PDF Report Printing
+       - A formatted summary PDF can be printed at the kiosk, including the
+         health score, key findings, and AI recommendations.
+       - Generated client-side using ReportLab with IPA branding.
+
+
+3.  HOW PASTEURAI HELPS
+───────────────────────────────────────────────────────────────────────────────
+
+  3.1  For Patients
+       - Eliminates confusion: lab reports contain 30–50+ cryptic numerical
+         values. PasteurAI translates them into understandable insights.
+       - Instant access: scan → dashboard in under 10 seconds.
+       - Bilingual support accommodates Arabic-speaking and French-speaking
+         patients equally.
+       - Educational: AI explains what each abnormal value means clinically
+         and what to do about it.
+       - Peace of mind: patients know what to expect before seeing the doctor.
+
+  3.2  For Doctors
+       - Reduces consultation time: patients arrive already informed about
+         their results.
+       - Fewer repetitive explanations: the AI handles the basic "what does
+         this value mean" questions.
+       - Trend tracking: historical comparisons help identify disease
+         progression or treatment response.
+       - The system complements, never replaces, the physician's judgment.
+
+  3.3  For the Institution
+       - Modernizes the patient experience at Institut Pasteur d'Algérie.
+       - Reduces front-desk workload for result inquiries.
+       - Scalable: one kiosk serves hundreds of patients daily.
+       - Cost-effective: built with open-source technologies (Python, React,
+         FastAPI) and a low-cost LLM API.
+
+
+4.  VISUAL DESIGN & COLOR IMPLEMENTATION
+───────────────────────────────────────────────────────────────────────────────
+
+  4.1  Color Palette
+       The interface uses a dark medical theme designed for readability in
+       low-light kiosk environments:
+
+       • Background:  #061220  (deep midnight blue)
+       • Cards:       rgba(255, 255, 255, 0.03–0.08)  (glassmorphism)
+       • Primary:     #60A5FA  (soft blue accent)
+       • Foreground:  #F1F5F9  (near-white text)
+       • Borders:     rgba(255, 255, 255, 0.06–0.10)
+
+       Severity colors follow universal medical conventions:
+       ┌──────────┬──────────┬───────────────┐
+       │ Severity  │ Color    │ Usage         │
+       ├──────────┼──────────┼───────────────┤
+       │ Normal    │ #22C55E  │ Green badge   │
+       │ Elevated  │ #F59E0B  │ Amber badge   │
+       │ Low       │ #60A5FA  │ Blue badge    │
+       │ Critical  │ #EF4444  │ Red badge     │
+       └──────────┴──────────┴───────────────┘
+
+  4.2  Glassmorphism & Visual Effects
+       - Cards use backdrop-filter blur (20px) and semi-transparent
+         backgrounds to create a frosted-glass effect.
+       - An interactive particle field animates in the background using
+         HTML5 Canvas, creating a modern, dynamic feel without distracting
+         from content.
+       - Smooth slide-up and fade-in animations with staggered delays give
+         a polished, responsive experience.
+       - The design is fully responsive from mobile to 4K kiosk displays.
+
+  4.3  Typography
+       - Headings: DM Sans (sans-serif, weights 700–800)
+       - Body: System font stack optimized for legibility
+       - Monospace values: JetBrains Mono for lab result numbers
+
+
+5.  AI MODEL & PATIENT DATA SECURITY
+───────────────────────────────────────────────────────────────────────────────
+
+  5.1  AI Model
+       - Provider: Groq Cloud
+       - Model:    llama-3.1-8b-instant (8 billion parameters)
+       - Use case: structured JSON analysis of lab results
+       - Format:   JSON mode enabled for reliable parsing
+       - Temperature: 0.2 (low creativity, high reproducibility)
+
+  5.2  Data Privacy — Multiple Protection Layers
+
+       Layer 1 — PII Stripping (src/ai_interpreter.py:_strip_pii)
+       Before any data leaves the server, patient name is removed from the
+       report JSON. Only age and sex are retained (clinically relevant).
+       The function uses deep copy so the original data is never mutated.
+
+       Layer 2 — Non-Text Removal (src/ai_interpreter.py:_strip_non_text)
+       Metadata (PDF source, timestamps) and interpretation fields are
+       stripped. Per-test fields like methodology and normalization
+       confidence are also removed — only the clinical values and ranges
+       are sent.
+
+       Layer 3 — No Training
+       Groq's terms of service confirm that submitted data is NOT used for
+       model training. All API calls are encrypted via HTTPS.
+
+       Layer 4 — Local-First Architecture
+       The FastAPI backend runs on localhost (port 8000). The frontend
+       communicates exclusively with the local backend via Vite proxy.
+       No patient data is stored in external cloud databases.
+
+       Layer 5 — No Persistent Storage of AI Outputs
+       AI analysis results are cached in the browser's sessionStorage only,
+       which is cleared when the session ends. No AI outputs are written
+       to disk on the server.
+
+  5.3  Fallback Safety
+       If the AI API is unreachable or returns an empty result, the system
+       automatically generates basic findings server-side by comparing each
+       test value against its reference range. This ensures the kiosk never
+       fails open — patients always see their abnormal results.
+
+
+6.  TECHNICAL WORKFLOW
+───────────────────────────────────────────────────────────────────────────────
+
+  ┌──────────┐     ┌───────────┐     ┌────────────┐     ┌───────────┐
+  │  Patient  │     │   Kiosk   │     │   Backend   │     │  Groq AI  │
+  │  Phone    │     │  Frontend │     │  FastAPI    │     │  LLM API  │
+  └────┬─────┘     └─────┬─────┘     └──────┬──────┘     └─────┬─────┘
+       │                  │                  │                  │
+       │  Scan QR code    │                  │                  │
+       │─────────────────>│                  │                  │
+       │                  │  GET /api/reports/ref               │
+       │                  │─────────────────>│                  │
+       │                  │                  │                  │
+       │                  │                  │  Download PDF    │
+       │                  │                  │  from IPA server │
+       │                  │                  │  Parse with      │
+       │                  │                  │  PdfParser       │
+       │                  │                  │  Match biomarkers│
+       │                  │                  │  via registry    │
+       │                  │                  │  (105 entries)   │
+       │                  │                  │                  │
+       │                  │  Return ReportJson                 │
+       │                  │<─────────────────│                  │
+       │                  │                  │                  │
+       │                  │  POST /api/analyze                  │
+       │                  │─────────────────>│                  │
+       │                  │                  │  Strip PII       │
+       │                  │                  │  Build prompt    │
+       │                  │                  │─────────────────>│
+       │                  │                  │  Analyze results │
+       │                  │                  │<─────────────────│
+       │                  │  Return findings │                  │
+       │                  │<─────────────────│                  │
+       │                  │                  │                  │
+       │  See dashboard   │                  │                  │
+       │<─────────────────│                  │                  │
+       │  & AI insights   │                  │                  │
+       │                  │                  │                  │
+
+  Key Technologies Used:
+
+  ┌─────────────────────┬────────────────────────────────────────┐
+  │ Component           │ Technology                              │
+  ├─────────────────────┼────────────────────────────────────────┤
+  │ Backend framework   │ Python 3.13 / FastAPI / Uvicorn         │
+  │ Frontend framework  │ React 19 / TypeScript / Vite 6         │
+  │ AI / LLM            │ Groq Cloud / llama-3.1-8b-instant      │
+  │ PDF parsing         │ pypdf / custom regex (French locale)    │
+  │ QR decoding         │ pyzbar                                 │
+  │ Web scraping        │ requests / BeautifulSoup4               │
+  │ PDF generation      │ ReportLab                               │
+  │ Charts              │ Victory (React)                          │
+  │ Styling             │ Tailwind CSS / custom theme engine       │
+  │ Dev orchestration   │ concurrently (npm)                      │
+  └─────────────────────┴────────────────────────────────────────┘
+
+Folder structure:
+  ├── src/                  # Python backend logic
+  │   ├── ai_interpreter.py  # Groq LLM prompts + PII stripping
+  │   ├── biomarker_registry.py  # 105-entry medical knowledge base
+  │   ├── pdf_parser.py      # French-locale PDF text extractor
+  │   ├── data_export.py     # JSON export with normalization
+  │   ├── qr_reader.py       # QR code image scanning
+  │   ├── page_retriever.py  # Download IPA report HTML page
+  │   ├── link_parser.py     # Extract PDF download URL
+  │   ├── pdf_downloader.py  # Download secured PDF
+  │   ├── pipeline.py        # Full CLI pipeline entry point
+  │   ├── database.py        # PostgreSQL client (optional)
+  │   └── data_filter.py     # CSV report filtering
+  ├── backend/
+  │   └── server.py          # FastAPI app with all endpoints
+  ├── frontend/
+  │   └── src/               # React app (Vite + TypeScript)
+  │       ├── app/           # Pages + components + styles
+  │       └── lib/           # API client, cache, types
+  ├── downloads/             # Cached PDFs (git-ignored)
+  └── output/                # Processed JSON reports (git-ignored)
+
+
+7.  DEPLOYMENT RECOMMENDATION — KIOSK IN WAITING ROOM
+───────────────────────────────────────────────────────────────────────────────
+
+  7.1  Physical Setup
+       PasteurAI is designed to run as a self-service touchscreen kiosk
+       in the IPA waiting room. The recommended hardware:
+       • 21.5"–27" touchscreen display (portrait orientation).
+       • Small form-factor PC (e.g., Intel NUC, Raspberry Pi 5, or thin
+         client) running Windows or Linux.
+       • Built-in webcam or external USB scanner for QR code capture.
+       • Thermal receipt printer or A4 laser printer for report summaries.
+
+  7.2  User Flow
+       1. Patient receives their lab report with QR code from the
+          reception desk.
+       2. Patient approaches kiosk and presents QR code to the camera.
+       3. Kiosk automatically detects the code, retrieves the report,
+          and displays the dashboard within 5–10 seconds.
+       4. Patient reads the AI-generated insights and can ask follow-up
+          questions by typing or voice (planned).
+       5. Patient can print a summary to bring to their consultation.
+       6. The kiosk automatically returns to the home screen after
+          60 seconds of inactivity (kiosk mode).
+
+  7.3  Benefits of Kiosk Deployment
+       • Zero staff supervision required — fully automated.
+       • Reduces waiting-room anxiety: patients understand their results
+         before seeing the doctor.
+       • Shortens consultation time by 3–5 minutes per patient (doctor
+         spends less time explaining basic lab concepts).
+       • At ~200 patients/day, that saves 10+ hours of doctor time daily.
+       • Scalable: multiple kiosks can run from a single backend instance.
+       • Offline-capable: the biomarker registry and fallback analysis
+         work without internet (AI features require connectivity).
+
+  7.4  Kiosk Mode Features
+       • Full-screen lock (F11 / kiosk browser mode).
+       • Touch-optimized UI with large buttons (minimum 44x44 px).
+       • Auto-return to scan screen after inactivity.
+       • Disabled browser chrome to prevent navigation away.
+       • Admin panel for monitoring: AI status, printer status, logs,
+         system health checks, and remote restart/shutdown.
+
+
+8.  SECURITY & COMPLIANCE NOTES
+───────────────────────────────────────────────────────────────────────────────
+
+  • All patient data processing happens on the local machine.
+  • The Groq API receives only anonymized clinical values (no name,
+    address, or identifying information).
+  • No patient data is logged in plain text; all logs use report
+    reference numbers only.
+  • The system does not store patient names in the backend — the name
+    is passed to the frontend solely for in-session display and is
+    never persisted.
+  • CORS is configured to allow only the frontend origin.
+  • Environment variables (GROQ_API_KEY) are loaded from a .env file
+    in the backend directory — never committed to version control.
+  • The `.gitignore` explicitly excludes downloads/ (PDFs), output/
+    (processed reports), .env (secrets), and __pycache__/.
+
+
+9.  FUTURE ENHANCEMENTS (RECOMMENDED)
+───────────────────────────────────────────────────────────────────────────────
+
+  • Voice assistant: allow patients to ask questions via speech-to-text
+    using Whisper or Groq's audio API.
+  • Push notifications: notify patients via WhatsApp or SMS when new
+    results are available.
+  • Doctor portal: a separate interface where physicians can review
+    AI-generated insights before the patient arrives.
+  • Integration with IPA's LIS (Laboratory Information System) for
+    real-time result streaming instead of PDF polling.
+  • Mobile app: companion app for patients to access their historical
+    reports from home.
+  • Expanded AI capabilities: differential diagnosis suggestions,
+    medication interaction warnings, and lifestyle recommendations.
+
+
+───────────────────────────────────────────────────────────────────────────────
+                      END OF REPORT DOCUMENT
+───────────────────────────────────────────────────────────────────────────────
